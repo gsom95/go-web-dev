@@ -8,25 +8,6 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 )
 
-type Router struct{}
-
-func (router Router) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	pathHandler(w, r)
-}
-
-func pathHandler(w http.ResponseWriter, r *http.Request) {
-	switch r.URL.Path {
-	case "/":
-		homeHandler(w, r)
-	case "/contact":
-		contactHandler(w, r)
-	case "/faq":
-		faqHandler(w, r)
-	default:
-		http.NotFound(w, r)
-	}
-}
-
 func homeHandler(w http.ResponseWriter, r *http.Request) {
 	// this can determine how a browser would render response body
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
@@ -57,10 +38,15 @@ func contactHandler(w http.ResponseWriter, r *http.Request) {
 func main() {
 	r := chi.NewRouter()
 	r.Use(middleware.Logger, middleware.Recoverer)
+	r.Get("/", homeHandler)
+	r.Get("/contact", contactHandler)
+	r.Get("/faq", faqHandler)
 	r.Get("/panic", func(w http.ResponseWriter, r *http.Request) {
 		panic("at the disco!")
 	})
-	r.Get("/contact", contactHandler)
+	r.NotFound(func(w http.ResponseWriter, r *http.Request) {
+		http.NotFound(w, r)
+	})
 
 	fmt.Println("Starting the server on :3000...")
 	_ = http.ListenAndServe(":3000", r)
