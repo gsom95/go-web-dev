@@ -35,6 +35,11 @@ func contactHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, "<h1>Contact Page</h1><p>To get in touch, email me at <a href=\"mailto:jon@calhoun.io\">jon@calhoun.io</a>.</p>")
 }
 
+func getGallery(w http.ResponseWriter, r *http.Request) {
+	galleryID := chi.URLParam(r, "galleryID")
+	fmt.Fprintf(w, "Got id=%s", galleryID)
+}
+
 func main() {
 	r := chi.NewRouter()
 	r.Use(middleware.Logger, middleware.Recoverer)
@@ -46,6 +51,9 @@ func main() {
 	})
 	r.NotFound(func(w http.ResponseWriter, r *http.Request) {
 		http.NotFound(w, r)
+	})
+	r.Route("/galleries", func(r chi.Router) {
+		r.Get("/{galleryID}", getGallery)
 	})
 
 	fmt.Println("Starting the server on :3000...")
