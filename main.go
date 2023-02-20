@@ -3,6 +3,9 @@ package main
 import (
 	"fmt"
 	"net/http"
+
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 )
 
 type Router struct{}
@@ -52,6 +55,13 @@ func contactHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	r := chi.NewRouter()
+	r.Use(middleware.Logger, middleware.Recoverer)
+	r.Get("/panic", func(w http.ResponseWriter, r *http.Request) {
+		panic("at the disco!")
+	})
+	r.Get("/contact", contactHandler)
+
 	fmt.Println("Starting the server on :3000...")
-	_ = http.ListenAndServe(":3000", Router{})
+	_ = http.ListenAndServe(":3000", r)
 }
