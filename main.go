@@ -18,23 +18,16 @@ func main() {
 		http.NotFound(w, r)
 	})
 
-	tpl, err := view.Parse(filepath.Join("templates", "home.gohtml"))
-	if err != nil {
-		log.Fatalln(err)
-	}
-	r.Get("/", controllers.StaticHandler(tpl))
+	r.Get("/", controllers.StaticHandler(
+		view.Must(view.Parse(filepath.Join("templates", "home.gohtml"))),
+	))
+	r.Get("/contact", controllers.StaticHandler(
+		view.Must(view.Parse(filepath.Join("templates", "contact.gohtml"))),
+	))
 
-	tpl, err = view.Parse(filepath.Join("templates", "contact.gohtml"))
-	if err != nil {
-		log.Fatalln(err)
-	}
-	r.Get("/contact", controllers.StaticHandler(tpl))
-
-	tpl, err = view.Parse(filepath.Join("templates", "faq.gohtml"))
-	if err != nil {
-		log.Fatalln(err)
-	}
-	r.Get("/faq", controllers.StaticHandler(tpl))
+	r.Get("/faq", controllers.StaticHandler(
+		view.Must(view.Parse(filepath.Join("templates", "faq.gohtml"))),
+	))
 
 	log.Println("Starting the server on :3000...")
 	_ = http.ListenAndServe(":3000", r)

@@ -34,3 +34,12 @@ func Parse(filepath string) (Template, error) {
 		htmlTpl: htmlTpl,
 	}, nil
 }
+
+// Must is only used when starting up our application and parsing templates for the first time, 
+// and we know that almost all errors that occur during a call to Parse are developer errors.
+func Must(t Template, err error) Template {
+	if err != nil {
+		panic(err)
+	}
+	return t
+}
