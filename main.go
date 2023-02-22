@@ -8,6 +8,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/gsom95/go-web-dev/controllers"
 	"github.com/gsom95/go-web-dev/view"
 )
 
@@ -44,7 +45,12 @@ func getGallery(w http.ResponseWriter, r *http.Request) {
 func main() {
 	r := chi.NewRouter()
 	r.Use(middleware.Logger, middleware.Recoverer)
-	r.Get("/", homeHandler)
+
+	homeTpl, err := view.Parse(filepath.Join("templates", "home.gohtml"))
+	if err != nil {
+		log.Fatalln(err)
+	}
+	r.Method(http.MethodGet, "/", controllers.Static{Template: homeTpl})
 	r.Get("/contact", contactHandler)
 	r.Get("/faq", faqHandler)
 	r.Get("/panic", func(w http.ResponseWriter, r *http.Request) {
