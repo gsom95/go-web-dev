@@ -1,8 +1,32 @@
-Bio: {{.Bio}}
-<script>
-  const user = {
-    "name": {{.Name}},
-    "bio": {{.Bio}}
-  };
-  console.log(user);
-</script>
+<div>Bio: {{.User.Info.Bio}}</div>
+<div>Age: {{.User.Info.Age}}</div>
+<h1>Slice</h1>
+{{ if not .Items}}
+  <div><strong>no rows</strong></div>
+{{ else }}
+  <ol>
+  {{ range .Items }}
+    <li>{{ . }}</li>
+  {{ end }}
+  </ol>
+{{ end }}
+
+<h1>Empty slice</h1>
+{{ if not .EmptyItems}}
+  <div><strong>no rows</strong></div>
+{{ else }}
+  <ol>
+  {{ range .EmptyItems }}
+    <li>{{ . }}</li>
+  </ol>
+  {{ end }}
+{{ end }}
+
+<h1>Map</h1>
+{{ range $key, $value := .MapItems }}
+  <li><strong>{{ $key }}</strong>: {{ $value }}</li>
+  {{ if eq $key 1 }} <div>SUPER VALUE</div>
+  {{ end }}
+{{ else }}
+<div>no map entries</div>
+{{ end }}

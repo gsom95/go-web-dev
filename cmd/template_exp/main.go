@@ -8,8 +8,15 @@ import (
 
 type User struct {
 	Name string
-	Bio  string
+	Info Info
 }
+
+type Info struct {
+	Bio string
+	Age int
+}
+
+type Items []int
 
 func main() {
 	t, err := template.ParseFiles("hello.gohtml")
@@ -19,9 +26,23 @@ func main() {
 
 	user := User{
 		Name: "John Kek",
-		Bio:  `<script>alert("Haha, you have been h4x0r3d!");</script>`,
+		Info: Info{
+			Bio: `<script>alert("Haha, you have been h4x0r3d!");</script>`,
+			Age: 33,
+		},
 	}
-	err = t.Execute(os.Stdout, user)
+	items := Items{1, 2, 3, 4}
+	err = t.Execute(os.Stdout, struct {
+		User
+		Items
+		EmptyItems Items
+		MapItems   map[int]any
+	}{
+		User:       user,
+		Items:      items,
+		EmptyItems: nil,
+		MapItems:   map[int]any{1: 'a', 2: "kekekek"},
+	})
 	if err != nil {
 		log.Fatalln(err)
 	}
