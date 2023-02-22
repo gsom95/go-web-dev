@@ -18,15 +18,18 @@ func main() {
 		http.NotFound(w, r)
 	})
 
+	templatesFolder := "templates"
+
 	r.Get("/", controllers.StaticHandler(
-		view.Must(view.Parse(filepath.Join("templates", "home.gohtml"))),
+		view.Must(view.Parse(filepath.Join(templatesFolder, "home.gohtml"))),
 	))
 	r.Get("/contact", controllers.StaticHandler(
-		view.Must(view.Parse(filepath.Join("templates", "contact.gohtml"))),
+		view.Must(view.Parse(filepath.Join(templatesFolder, "contact.gohtml"))),
 	))
 
 	r.Get("/faq", controllers.StaticHandler(
-		view.Must(view.Parse(filepath.Join("templates", "faq.gohtml"))),
+		view.Must(view.Parse(filepath.Join(templatesFolder, "faq.gohtml"))),
+	))
 	))
 
 	log.Println("Starting the server on :3000...")
