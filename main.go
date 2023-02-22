@@ -33,19 +33,8 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func faqHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	fmt.Fprintf(w, `<h1>FAQ Page</h1>
-<ul>
-	<li>
-	<b>What are you doing?</b>
-	I'm trying to learn how to write backend web applications using Go!
-	</li>
-	<li>
-	<b>Yeah, but why exactly you decided to do it?</b>
-	Well, because I want to be sure that I know all the basic and required stuff. There's lots of nuances in writing backend server apps.
-	</li>
-</ul>
-	`)
+	tplPath := filepath.Join("templates", "faq.gohtml")
+	executeTemplate(w, tplPath)
 }
 
 func contactHandler(w http.ResponseWriter, r *http.Request) {
