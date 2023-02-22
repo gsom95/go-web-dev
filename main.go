@@ -30,6 +30,8 @@ func main() {
 	r.Get("/faq", controllers.StaticHandler(
 		view.Must(view.Parse(filepath.Join(templatesFolder, "faq.gohtml"))),
 	))
+	r.Get("/others", controllers.StaticHandler(
+		view.Must(view.Parse(filepath.Join(templatesFolder, "another_static.gohtml"))),
 	))
 
 	log.Println("Starting the server on :3000...")
