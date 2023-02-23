@@ -25,7 +25,7 @@ func main() {
 		view.Must(view.ParseFS(templates.FS, "contact.gohtml")),
 	))
 
-	r.Get("/faq", controllers.StaticHandler(
+	r.Get("/faq", controllers.FAQ(
 		view.Must(view.ParseFS(templates.FS, "faq.gohtml")),
 	))
 	r.Get("/others", controllers.StaticHandler(
