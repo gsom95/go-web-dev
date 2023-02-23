@@ -3,11 +3,11 @@ package main
 import (
 	"log"
 	"net/http"
-	"path/filepath"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/gsom95/go-web-dev/controllers"
+	"github.com/gsom95/go-web-dev/templates"
 	"github.com/gsom95/go-web-dev/view"
 )
 
@@ -18,20 +18,18 @@ func main() {
 		http.NotFound(w, r)
 	})
 
-	templatesFolder := "templates"
-
 	r.Get("/", controllers.StaticHandler(
-		view.Must(view.Parse(filepath.Join(templatesFolder, "home.gohtml"))),
+		view.Must(view.ParseFS(templates.FS, "home.gohtml")),
 	))
 	r.Get("/contact", controllers.StaticHandler(
-		view.Must(view.Parse(filepath.Join(templatesFolder, "contact.gohtml"))),
+		view.Must(view.ParseFS(templates.FS, "contact.gohtml")),
 	))
 
 	r.Get("/faq", controllers.StaticHandler(
-		view.Must(view.Parse(filepath.Join(templatesFolder, "faq.gohtml"))),
+		view.Must(view.ParseFS(templates.FS, "faq.gohtml")),
 	))
 	r.Get("/others", controllers.StaticHandler(
-		view.Must(view.Parse(filepath.Join(templatesFolder, "another_static.gohtml"))),
+		view.Must(view.ParseFS(templates.FS, "another_static.gohtml")),
 	))
 
 	log.Println("Starting the server on :3000...")

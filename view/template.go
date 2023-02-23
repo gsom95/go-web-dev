@@ -3,6 +3,7 @@ package view
 import (
 	"fmt"
 	"html/template"
+	"io/fs"
 	"log"
 	"net/http"
 )
@@ -33,9 +34,21 @@ func Parse(filepath string) (Template, error) {
 	return Template{
 		htmlTpl: htmlTpl,
 	}, nil
+
 }
 
-// Must is only used when starting up our application and parsing templates for the first time, 
+// ParseFS tries to parse template from embedded FS.
+func ParseFS(fs fs.FS, pattern string) (Template, error) {
+	htmlTpl, err := template.ParseFS(fs, pattern)
+	if err != nil {
+		return Template{}, fmt.Errorf("parsing template: %w", err)
+	}
+	return Template{
+		htmlTpl: htmlTpl,
+	}, nil
+}
+
+// Must is only used when starting up our application and parsing templates for the first time,
 // and we know that almost all errors that occur during a call to Parse are developer errors.
 func Must(t Template, err error) Template {
 	if err != nil {
