@@ -38,8 +38,8 @@ func Parse(filepath string) (Template, error) {
 }
 
 // ParseFS tries to parse template from embedded FS.
-func ParseFS(fs fs.FS, pattern string) (Template, error) {
-	htmlTpl, err := template.ParseFS(fs, pattern)
+func ParseFS(fs fs.FS, patterns ...string) (Template, error) {
+	htmlTpl, err := template.ParseFS(fs, patterns...)
 	if err != nil {
 		return Template{}, fmt.Errorf("parsing template: %w", err)
 	}
