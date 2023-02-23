@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"html/template"
 	"net/http"
 
 	"github.com/gsom95/go-web-dev/view"
@@ -16,7 +17,7 @@ func StaticHandler(tpl view.Template) http.HandlerFunc {
 func FAQ(tpl view.Template) http.HandlerFunc {
 	questions := []struct {
 		Question string
-		Answer   string
+		Answer   template.HTML
 	}{
 		{
 			Question: "What are you doing?",
