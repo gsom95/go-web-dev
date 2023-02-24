@@ -18,18 +18,17 @@ func main() {
 		http.NotFound(w, r)
 	})
 
+	tailwind := "tailwind.gohtml"
+
 	r.Get("/", controllers.StaticHandler(
-		view.Must(view.ParseFS(templates.FS, "layout-page.gohtml", "home-page.gohtml")),
+		view.Must(view.ParseFS(templates.FS, "home.gohtml", tailwind)),
 	))
 	r.Get("/contact", controllers.StaticHandler(
-		view.Must(view.ParseFS(templates.FS, "contact.gohtml")),
+		view.Must(view.ParseFS(templates.FS, "contact.gohtml", tailwind)),
 	))
 
 	r.Get("/faq", controllers.FAQ(
-		view.Must(view.ParseFS(templates.FS, "faq.gohtml")),
-	))
-	r.Get("/others", controllers.StaticHandler(
-		view.Must(view.ParseFS(templates.FS, "another_static.gohtml")),
+		view.Must(view.ParseFS(templates.FS, "faq.gohtml", tailwind)),
 	))
 
 	log.Println("Starting the server on :3000...")
