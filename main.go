@@ -31,6 +31,10 @@ func main() {
 		view.Must(view.ParseFS(templates.FS, "faq.gohtml", tailwind)),
 	))
 
+	r.Get("/signup", controllers.StaticHandler(
+		view.Must(view.ParseFS(templates.FS, "signup.gohtml", tailwind)),
+	))
+
 	log.Println("Starting the server on :3000...")
 	_ = http.ListenAndServe(":3000", r)
 }
