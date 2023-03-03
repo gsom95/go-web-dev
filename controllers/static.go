@@ -3,18 +3,27 @@ package controllers
 import (
 	"html/template"
 	"net/http"
-
-	"github.com/gsom95/go-web-dev/view"
 )
 
+// Static is a controller for rendering static pages.
+type Static struct {
+	Template Template
+}
+
+// ServeHTTP implements http.Handle
+func (s Static) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	s.Template.Execute(w, nil)
+}
+
 // StaticHandler returns a HandlerFunc for serving static web pages.
-func StaticHandler(tpl view.Template) http.HandlerFunc {
+func StaticHandler(tpl Template) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		tpl.Execute(w, nil)
 	}
 }
 
-func FAQ(tpl view.Template) http.HandlerFunc {
+// FAQ renders FAQ page.
+func FAQ(tpl Template) http.HandlerFunc {
 	questions := []struct {
 		Question string
 		Answer   template.HTML

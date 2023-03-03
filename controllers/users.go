@@ -2,14 +2,12 @@ package controllers
 
 import (
 	"net/http"
-
-	"github.com/gsom95/go-web-dev/view"
 )
 
 // Users will be used by HTTP handlers.
 type Users struct {
 	Templates struct {
-		New view.Template
+		New Template
 	}
 }
 

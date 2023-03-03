@@ -15,7 +15,7 @@ type Template struct {
 }
 
 // Execute executes the template and writes result to the http.ResponseWriter.
-func (t *Template) Execute(w http.ResponseWriter, data any) {
+func (t Template) Execute(w http.ResponseWriter, data any) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	err := t.htmlTpl.Execute(w, data)
 	if err != nil {
