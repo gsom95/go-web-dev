@@ -36,7 +36,8 @@ func main() {
 		templates.FS, "signup.gohtml", tailwind,
 	))
 	r.Get("/signup", usersCtrl.New)
+	r.Post("/signup", usersCtrl.Create)
 
 	log.Println("Starting the server on :3000...")
-	_ = http.ListenAndServe(":3000", r)
+	log.Println(http.ListenAndServe(":3000", r)) 
 }
