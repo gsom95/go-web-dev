@@ -35,9 +35,9 @@ func main() {
 	usersCtrl.Templates.New = view.Must(view.ParseFS(
 		templates.FS, "signup.gohtml", tailwind,
 	))
-	r.Get("/signup", usersCtrl.New)
+	r.Get("/users/new", usersCtrl.New)
 	r.Post("/signup", usersCtrl.Create)
 
 	log.Println("Starting the server on :3000...")
-	log.Println(http.ListenAndServe(":3000", r)) 
+	log.Println(http.ListenAndServe(":3000", r))
 }
