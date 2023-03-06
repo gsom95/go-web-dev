@@ -32,13 +32,13 @@ func main() {
 	}
 	db, err := sql.Open("pgx", cfg.String())
 	if err != nil {
-		panic(err)
+		log.Fatalln(err)
 	}
 	defer db.Close()
 
 	err = db.Ping()
 	if err != nil {
-		panic(err)
+		log.Fatalln(err)
 	}
 	log.Println("connected")
 
@@ -55,7 +55,7 @@ func main() {
 		description TEXT
 	  );`)
 	if err != nil {
-		panic(err)
+		log.Fatalln(err)
 	}
 	log.Println("Tables created.")
 
@@ -66,14 +66,13 @@ func main() {
 
 	// no need to call row.Err() because as noted in docs:
 	// "If this error is not nil, this error will also be returned from Scan."
-
 	// if row.Err() != nil {
-	// 	panic(err)
+	// 	log.Fatalln(err)
 	// }
 	// var id int
 	// err = row.Scan(&id)
 	// if err != nil {
-	// 	panic(err)
+	// 	log.Fatalln(err)
 	// }
 	// log.Println("User created. id =", id)
 
@@ -85,20 +84,53 @@ func main() {
 	var name, email string
 	err = row.Scan(&name, &email)
 	if err != nil {
-		panic(err)
+		log.Fatalln(err)
 	}
 	log.Printf("User information: name=%s, email=%s\n", name, email)
 
-	userID := id
-	for i := 1; i <= 5; i++ {
-		amount := i * 100
-		desc := fmt.Sprintf("Fake order #%d", i)
-		_, err := db.Exec(`
-		  INSERT INTO orders(user_id, amount, description)
-		  VALUES($1, $2, $3)`, userID, amount, desc)
-		if err != nil {
-			panic(err)
-		}
+	// userID := id
+	// for i := 1; i <= 5; i++ {
+	// 	amount := i * 100
+	// 	desc := fmt.Sprintf("Fake order #%d", i)
+	// 	_, err := db.Exec(`
+	// 	  INSERT INTO orders(user_id, amount, description)
+	// 	  VALUES($1, $2, $3)`, userID, amount, desc)
+	// 	if err != nil {
+	// 		log.Fatalln(err)
+	// 	}
+	// }
+	// log.Println("Created fake orders.")
+
+	type Order struct {
+		ID          int
+		UserID      int
+		Amount      int
+		Description string
 	}
-	log.Println("Created fake orders.")
+
+	var orders []Order
+	rows, err := db.Query(`
+	SELECT id, amount, description 
+	FROM orders 
+	WHERE user_id = $1`, id)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	defer func() {
+		_ = rows.Close()
+	}()
+
+	for rows.Next() {
+		order := Order{UserID: id}
+		err = rows.Scan(&order.ID, &order.Amount, &order.Description)
+		if err != nil {
+			log.Fatalln(err)
+		}
+		orders = append(orders, order)
+	}
+	err = rows.Err()
+	if err != nil {
+		log.Fatalln(err)
+	}
+	log.Println(orders)
 }
