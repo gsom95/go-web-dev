@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	"log"
 
 	_ "github.com/jackc/pgx/v5/stdlib"
 )
@@ -39,5 +40,41 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println("connected")
+	log.Println("connected")
+
+	_, err = db.Exec(`CREATE TABLE IF NOT EXISTS users (
+		id SERIAL PRIMARY KEY,
+		name TEXT,
+		email TEXT NOT NULL
+	  );
+	  
+	  CREATE TABLE IF NOT EXISTS orders (
+		id SERIAL PRIMARY KEY,
+		user_id INT NOT NULL,
+		amount INT,
+		description TEXT
+	  );`)
+	if err != nil {
+		panic(err)
+	}
+	log.Println("Tables created.")
+
+	name := "New User"
+	email := "new@calhoun.io"
+	row := db.QueryRow(`INSERT INTO users (name, email)
+  VALUES ($1, $2) RETURNING id;`, name, email)
+
+	// no need to call row.Err() because as noted in docs:
+	// "If this error is not nil, this error will also be returned from Scan."
+
+	// if row.Err() != nil {
+	// 	panic(err)
+	// }
+	var id int
+	err = row.Scan(&id)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("User created. id =", id)
+
 }
