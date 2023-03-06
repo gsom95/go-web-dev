@@ -59,10 +59,10 @@ func main() {
 	}
 	log.Println("Tables created.")
 
-	name := "New User"
-	email := "new@calhoun.io"
-	row := db.QueryRow(`INSERT INTO users (name, email)
-  VALUES ($1, $2) RETURNING id;`, name, email)
+	// 	name := "New User"
+	// 	email := "new@calhoun.io"
+	// 	row := db.QueryRow(`INSERT INTO users (name, email)
+	//   VALUES ($1, $2) RETURNING id;`, name, email)
 
 	// no need to call row.Err() because as noted in docs:
 	// "If this error is not nil, this error will also be returned from Scan."
@@ -70,11 +70,23 @@ func main() {
 	// if row.Err() != nil {
 	// 	panic(err)
 	// }
-	var id int
-	err = row.Scan(&id)
+	// var id int
+	// err = row.Scan(&id)
+	// if err != nil {
+	// 	panic(err)
+	// }
+	// fmt.Println("User created. id =", id)
+
+	id := 1
+	row := db.QueryRow(`
+  SELECT name, email
+  FROM users
+  WHERE id=$1;`, id)
+	var name, email string
+	err = row.Scan(&name, &email)
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println("User created. id =", id)
+	fmt.Printf("User information: name=%s, email=%s\n", name, email)
 
 }
