@@ -2,7 +2,10 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 func main() {
@@ -10,7 +13,7 @@ func main() {
 		fmt.Println(`usage: learn_bcrypt COMMAND ARGS...
 COMMAND: 
 	- hash "some text"
-	- compare "secret string" "hash"`)
+	- compare "secret string" 'hash' # use backticks for hash because of hash format`)
 
 		return
 	}
@@ -25,10 +28,22 @@ COMMAND:
 	}
 }
 
-func hash(hashStr string) {
-	fmt.Printf("TODO: implement me: %q\n", hashStr)
+func hash(password string) {
+	hashedBytes, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if err != nil {
+		log.Println("error hashing:", err)
+		return
+	}
+	hash := string(hashedBytes)
+	log.Println(hash)
 }
 
-func compare(secret, hash string) {
-	fmt.Printf("TODO: implement me: secret string = %q, hash = %q\n", secret, hash)
+func compare(password, hash string) {
+	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+	if err != nil {
+		log.Println("Error:", err)
+		return
+	}
+
+	log.Println("true")
 }
