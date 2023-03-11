@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/gsom95/go-web-dev/models"
 	_ "github.com/jackc/pgx/v5/stdlib"
 )
 
@@ -59,6 +60,15 @@ func main() {
 	}
 	log.Println("Tables created.")
 
+	us := models.UserService{
+		DB: db,
+	}
+	user, err := us.Create("bob@bobmail.kek", "secret password")
+	if err != nil {
+		log.Fatalln(err)
+	}
+	log.Println("User:", user)
+
 	// 	name := "New User"
 	// 	email := "new@calhoun.io"
 	// 	row := db.QueryRow(`INSERT INTO users (name, email)
@@ -76,17 +86,17 @@ func main() {
 	// }
 	// log.Println("User created. id =", id)
 
-	id := 1
-	row := db.QueryRow(`
-  SELECT name, email
-  FROM users
-  WHERE id=$1;`, id)
-	var name, email string
-	err = row.Scan(&name, &email)
-	if err != nil {
-		log.Fatalln(err)
-	}
-	log.Printf("User information: name=%s, email=%s\n", name, email)
+	// 	id := 1
+	// 	row := db.QueryRow(`
+	//   SELECT name, email
+	//   FROM users
+	//   WHERE id=$1;`, id)
+	// 	var name, email string
+	// 	err = row.Scan(&name, &email)
+	// 	if err != nil {
+	// 		log.Fatalln(err)
+	// 	}
+	// 	log.Printf("User information: name=%s, email=%s\n", name, email)
 
 	// userID := id
 	// for i := 1; i <= 5; i++ {
@@ -101,36 +111,36 @@ func main() {
 	// }
 	// log.Println("Created fake orders.")
 
-	type Order struct {
-		ID          int
-		UserID      int
-		Amount      int
-		Description string
-	}
+	// type Order struct {
+	// 	ID          int
+	// 	UserID      int
+	// 	Amount      int
+	// 	Description string
+	// }
 
-	var orders []Order
-	rows, err := db.Query(`
-	SELECT id, amount, description 
-	FROM orders 
-	WHERE user_id = $1`, id)
-	if err != nil {
-		log.Fatalln(err)
-	}
-	defer func() {
-		_ = rows.Close()
-	}()
+	// var orders []Order
+	// rows, err := db.Query(`
+	// SELECT id, amount, description
+	// FROM orders
+	// WHERE user_id = $1`, id)
+	// if err != nil {
+	// 	log.Fatalln(err)
+	// }
+	// defer func() {
+	// 	_ = rows.Close()
+	// }()
 
-	for rows.Next() {
-		order := Order{UserID: id}
-		err = rows.Scan(&order.ID, &order.Amount, &order.Description)
-		if err != nil {
-			log.Fatalln(err)
-		}
-		orders = append(orders, order)
-	}
-	err = rows.Err()
-	if err != nil {
-		log.Fatalln(err)
-	}
-	log.Println(orders)
+	// for rows.Next() {
+	// 	order := Order{UserID: id}
+	// 	err = rows.Scan(&order.ID, &order.Amount, &order.Description)
+	// 	if err != nil {
+	// 		log.Fatalln(err)
+	// 	}
+	// 	orders = append(orders, order)
+	// }
+	// err = rows.Err()
+	// if err != nil {
+	// 	log.Fatalln(err)
+	// }
+	// log.Println(orders)
 }
