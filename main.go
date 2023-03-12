@@ -7,6 +7,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/gsom95/go-web-dev/controllers"
+	"github.com/gsom95/go-web-dev/models"
 	"github.com/gsom95/go-web-dev/templates"
 	"github.com/gsom95/go-web-dev/view"
 )
@@ -31,10 +32,23 @@ func main() {
 		view.Must(view.ParseFS(templates.FS, "faq.gohtml", tailwind)),
 	))
 
+	// Setup a db connection
+	cfg := models.DefaultPostgresConfig()
+	db, err := models.Open(cfg)
+	if err != nil {
+		panic(err)
+	}
+	defer db.Close()
+
 	var usersCtrl controllers.Users
+	usersCtrl.Service = &models.UserService{
+		DB: db,
+	}
+
 	usersCtrl.Templates.New = view.Must(view.ParseFS(
 		templates.FS, "signup.gohtml", tailwind,
 	))
+
 	r.Get("/users/new", usersCtrl.New)
 	r.Post("/signup", usersCtrl.Create)
 
