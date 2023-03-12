@@ -3,6 +3,8 @@ package controllers
 import (
 	"fmt"
 	"net/http"
+
+	"github.com/gsom95/go-web-dev/models"
 )
 
 // Users will be used by HTTP handlers.
@@ -10,6 +12,7 @@ type Users struct {
 	Templates struct {
 		New Template
 	}
+	Service *models.UserService
 }
 
 // New shows signup page.
