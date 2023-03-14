@@ -8,6 +8,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+// User struct represents data stored in the database.
 type User struct {
 	ID           int
 	Email        string
@@ -19,6 +20,7 @@ type UserService struct {
 	DB *sql.DB
 }
 
+// Create handles creation and adding of a new user to the database.
 func (us *UserService) Create(email, password string) (*User, error) {
 	email = strings.ToLower(email)
 
