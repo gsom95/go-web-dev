@@ -54,7 +54,9 @@ func main() {
 
 	r.Get("/users/new", usersCtrl.New)
 	r.Post("/signup", usersCtrl.Create)
+
 	r.Get("/signin", usersCtrl.SignIn)
+	r.Post("/signin", usersCtrl.ProcessSignIn)
 
 	log.Println("Starting the server on :3000...")
 	log.Println(http.ListenAndServe(":3000", r))
