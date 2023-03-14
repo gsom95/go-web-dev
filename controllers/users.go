@@ -11,12 +11,13 @@ import (
 // Users will be used by HTTP handlers.
 type Users struct {
 	Templates struct {
-		New Template
+		New    Template
+		SignIn Template
 	}
 	Service *models.UserService
 }
 
-// New shows signup page.
+// New renders signup page.
 func (u Users) New(w http.ResponseWriter, r *http.Request) {
 	var data struct {
 		Email string
@@ -36,4 +37,13 @@ func (u Users) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	fmt.Fprintf(w, "User created: %+v", user)
+}
+
+// Signin renders sign in page.
+func (u Users) SignIn(w http.ResponseWriter, r *http.Request) {
+	var data struct {
+		Email string
+	}
+	data.Email = r.FormValue("email")
+	u.Templates.SignIn.Execute(w, data)
 }
