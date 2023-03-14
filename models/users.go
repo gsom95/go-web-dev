@@ -43,3 +43,25 @@ func (us *UserService) Create(email, password string) (*User, error) {
 
 	return &user, nil
 }
+
+// Authenticate is used for user authentication.
+func (us UserService) Authenticate(email, password string) (*User, error) {
+	user := User{
+		Email: strings.ToLower(email),
+	}
+	row := us.DB.QueryRow(`
+	SELECT id, password_hash
+	FROM users WHERE email = $1`, email)
+
+	// probably, we should also check if no user was found with email
+	// TODO: add check for "no user found" case
+	err := row.Scan(&user.ID, &user.PasswordHash)
+	if err != nil {
+		return nil, fmt.Errorf("authenticate: %w", err)
+	}
+	err = bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(password))
+	if err != nil {
+		return nil, fmt.Errorf("authenticate: %w", err)
+	}
+	return &user, nil
+}
