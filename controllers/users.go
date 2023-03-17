@@ -69,6 +69,9 @@ func (u Users) ProcessSignIn(w http.ResponseWriter, r *http.Request) {
 		// If we want a cookie to be accessible from any page on our website,
 		// we provide a Path value of '/' which maps to any path on our website.
 		Path: "/",
+
+		// To disable JavaScript access to cookies.
+		HttpOnly: true,
 	}
 	http.SetCookie(w, &cookie)
 
