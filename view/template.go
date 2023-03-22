@@ -25,18 +25,6 @@ func (t Template) Execute(w http.ResponseWriter, data any) {
 	}
 }
 
-// Parse gets a template from filepath and tries to parse it.
-func Parse(filepath string) (Template, error) {
-	htmlTpl, err := template.ParseFiles(filepath)
-	if err != nil {
-		return Template{}, fmt.Errorf("parsing template: %w", err)
-	}
-	return Template{
-		htmlTpl: htmlTpl,
-	}, nil
-
-}
-
 // ParseFS tries to parse template from embedded FS.
 func ParseFS(fs fs.FS, patterns ...string) (Template, error) {
 	htmlTpl, err := template.ParseFS(fs, patterns...)
