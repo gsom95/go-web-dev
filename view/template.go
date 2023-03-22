@@ -31,6 +31,12 @@ func ParseFS(fs fs.FS, patterns ...string) (Template, error) {
 	if err != nil {
 		return Template{}, fmt.Errorf("parsing template: %w", err)
 	}
+	htmlTpl = htmlTpl.Funcs(template.FuncMap{
+		"csrfField": func() template.HTML {
+			return `<input type="hidden" />`
+		},
+	})
+
 	return Template{
 		htmlTpl: htmlTpl,
 	}, nil
