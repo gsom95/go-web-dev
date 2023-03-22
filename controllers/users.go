@@ -2,9 +2,11 @@ package controllers
 
 import (
 	"fmt"
+	"html/template"
 	"log"
 	"net/http"
 
+	"github.com/gorilla/csrf"
 	"github.com/gsom95/go-web-dev/models"
 )
 
@@ -20,9 +22,15 @@ type Users struct {
 // New renders signup page.
 func (u Users) New(w http.ResponseWriter, r *http.Request) {
 	var data struct {
-		Email string
+		Email     string
+		CSRFField template.HTML
 	}
 	data.Email = r.FormValue("email")
+
+	// give us the HTML for a hidden <input> tag that has the CSRF token
+	// for the incoming request. We assign this to the CSRFField field of
+	// the data struct so that it will be available inside of our template.
+	data.CSRFField = csrf.TemplateField(r)
 	u.Templates.New.Execute(w, data)
 }
 
