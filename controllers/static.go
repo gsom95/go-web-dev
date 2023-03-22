@@ -5,20 +5,10 @@ import (
 	"net/http"
 )
 
-// Static is a controller for rendering static pages.
-type Static struct {
-	Template Template
-}
-
-// ServeHTTP implements http.Handle
-func (s Static) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	s.Template.Execute(w, nil)
-}
-
 // StaticHandler returns a HandlerFunc for serving static web pages.
 func StaticHandler(tpl Template) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		tpl.Execute(w, nil)
+		tpl.Execute(w, r, nil)
 	}
 }
 
@@ -51,6 +41,6 @@ func FAQ(tpl Template) http.HandlerFunc {
 	}
 
 	return func(w http.ResponseWriter, r *http.Request) {
-		tpl.Execute(w, questions)
+		tpl.Execute(w, r, questions)
 	}
 }
