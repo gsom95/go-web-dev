@@ -31,3 +31,7 @@ Repo for Jon Calhoun [Web Development with Go](https://www.usegolang.com/) cours
 
 ### Execute a command on running container (with docker)
 `docker exec -it <CONTAINER_NAME> psql -U baloo -d lenslocked`
+
+---
+### Check who is using port
+`lsof -i tcp:3000`
