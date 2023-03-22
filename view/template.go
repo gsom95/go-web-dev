@@ -27,18 +27,20 @@ func (t Template) Execute(w http.ResponseWriter, data any) {
 
 // ParseFS tries to parse template from embedded FS.
 func ParseFS(fs fs.FS, patterns ...string) (Template, error) {
-	htmlTpl, err := template.ParseFS(fs, patterns...)
+	tpl := template.New(patterns[0])
+	tpl = tpl.Funcs(
+		template.FuncMap{
+			"csrfField": func() template.HTML {
+				return `<input type="hidden" />`
+			},
+		},
+	)
+	tpl, err := tpl.ParseFS(fs, patterns...)
 	if err != nil {
 		return Template{}, fmt.Errorf("parsing template: %w", err)
 	}
-	htmlTpl = htmlTpl.Funcs(template.FuncMap{
-		"csrfField": func() template.HTML {
-			return `<input type="hidden" />`
-		},
-	})
-
 	return Template{
-		htmlTpl: htmlTpl,
+		htmlTpl: tpl,
 	}, nil
 }
 
