@@ -3,6 +3,8 @@ package controllers
 import (
 	"html/template"
 	"net/http"
+	"strconv"
+	"time"
 )
 
 // StaticHandler returns a HandlerFunc for serving static web pages.
@@ -41,6 +43,25 @@ func FAQ(tpl Template) http.HandlerFunc {
 	}
 
 	return func(w http.ResponseWriter, r *http.Request) {
+		faqCookie := http.Cookie{
+			Name:     "faq_visit_count",
+			Value:    "1",    // default value for counter
+			Path:     "/faq", // limit to /faq page only
+			HttpOnly: true,   // securing this very important cookie!
+		}
+
+		// skipping error check because we check cookie through Valid()
+		visitCount, _ := r.Cookie("faq_visit_count")
+		if valid := visitCount.Valid(); valid == nil {
+			count, _ := strconv.Atoi(visitCount.Value)
+			faqCookie.Value = strconv.Itoa(count + 1)
+		} else {
+			// if cookie from request is not valid, we should set expiring date
+			faqCookie.Expires = time.Now().Add(5 * time.Second)
+		}
+
+		http.SetCookie(w, &faqCookie)
+
 		tpl.Execute(w, r, questions)
 	}
 }
