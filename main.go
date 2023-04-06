@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -14,7 +15,15 @@ import (
 
 func main() {
 	r := chi.NewRouter()
-	r.Use(middleware.Logger, middleware.Recoverer)
+	// r.Use(middleware.Logger, middleware.Recoverer)
+	r.Use(middleware.Recoverer)
+	r.Use(func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			startTime := time.Now()
+			next.ServeHTTP(w, r)
+			log.Printf("request path: %s, time: %d microseconds, from: %s\n", r.URL.Path, time.Since(startTime).Microseconds(), r.RemoteAddr)
+		})
+	})
 	r.NotFound(func(w http.ResponseWriter, r *http.Request) {
 		http.NotFound(w, r)
 	})
