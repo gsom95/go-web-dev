@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 
@@ -77,18 +76,18 @@ func (u Users) ProcessSignIn(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Something went wrong.", http.StatusInternalServerError)
 		return
 	}
+	session, err := u.SessionService.Create(user.ID)
+	if err != nil {
+		log.Println("ProcessSignIn: cannot create session:", err.Error())
+		http.Error(w, "Something went wrong.", http.StatusInternalServerError)
+		return
+	}
 	cookie := http.Cookie{
-		Name:  "email",
-		Value: user.Email,
-
-		// If we want a cookie to be accessible from any page on our website,
-		// we provide a Path value of '/' which maps to any path on our website.
-		Path: "/",
-
-		// To disable JavaScript access to cookies.
+		Name:     "session",
+		Value:    session.Token,
+		Path:     "/",
 		HttpOnly: true,
 	}
 	http.SetCookie(w, &cookie)
-
-	fmt.Fprintf(w, "User authenticated: %+v", user)
+	http.Redirect(w, r, "/users/me", http.StatusFound)
 }
