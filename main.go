@@ -57,6 +57,7 @@ func main() {
 	))
 
 	r.Get("/users/new", usersCtrl.New)
+	r.Get("/users/me", usersCtrl.CurrentUser)
 	r.Post("/signup", usersCtrl.Create)
 
 	r.Get("/signin", usersCtrl.SignIn)
