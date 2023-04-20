@@ -14,7 +14,8 @@ type Users struct {
 		New    Template
 		SignIn Template
 	}
-	UserService *models.UserService
+	UserService    *models.UserService
+	SessionService *models.SessionService
 }
 
 // New renders signup page.
@@ -36,7 +37,21 @@ func (u Users) Create(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Something went wrong while creating a user", http.StatusInternalServerError)
 		return
 	}
-	fmt.Fprintf(w, "User created: %+v", user)
+	session, err := u.SessionService.Create(user.ID)
+	if err != nil {
+		log.Println("error creating user session:", err.Error())
+		// TODO: Long term, we should show a warning about not being able to sign the user in.
+		http.Redirect(w, r, "/signin", http.StatusFound)
+		return
+	}
+	cookie := http.Cookie{
+		Name:     "session",
+		Value:    session.Token,
+		Path:     "/",
+		HttpOnly: true,
+	}
+	http.SetCookie(w, &cookie)
+	http.Redirect(w, r, "/users/me", http.StatusFound)
 }
 
 // Signin renders sign in page.
