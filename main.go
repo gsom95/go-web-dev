@@ -45,7 +45,7 @@ func main() {
 	defer db.Close()
 
 	var usersCtrl controllers.Users
-	usersCtrl.Service = &models.UserService{
+	usersCtrl.UserService = &models.UserService{
 		DB: db,
 	}
 

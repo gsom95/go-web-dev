@@ -14,7 +14,7 @@ type Users struct {
 		New    Template
 		SignIn Template
 	}
-	Service *models.UserService
+	UserService *models.UserService
 }
 
 // New renders signup page.
@@ -30,7 +30,7 @@ func (u Users) New(w http.ResponseWriter, r *http.Request) {
 func (u Users) Create(w http.ResponseWriter, r *http.Request) {
 	email := r.FormValue("email")
 	password := r.FormValue("password")
-	user, err := u.Service.Create(email, password)
+	user, err := u.UserService.Create(email, password)
 	if err != nil {
 		log.Println("error creaing new user:", err.Error())
 		http.Error(w, "Something went wrong while creating a user", http.StatusInternalServerError)
@@ -56,7 +56,7 @@ func (u Users) ProcessSignIn(w http.ResponseWriter, r *http.Request) {
 	}
 	data.Email = r.FormValue("email")
 	data.Password = r.FormValue("password")
-	user, err := u.Service.Authenticate(data.Email, data.Password)
+	user, err := u.UserService.Authenticate(data.Email, data.Password)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, "Something went wrong.", http.StatusInternalServerError)
