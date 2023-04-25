@@ -1,6 +1,11 @@
 package models
 
-import "database/sql"
+import (
+	"database/sql"
+	"fmt"
+
+	"github.com/gsom95/go-web-dev/rand"
+)
 
 // Session is a one-to-one mapping of sessions table.
 type Session struct {
@@ -22,9 +27,18 @@ type SessionService struct {
 // will be returned as the Token field on the Session type, but only the hashed
 // session token is stored in the database.
 func (ss *SessionService) Create(userID int) (*Session, error) {
-	// TODO: Create the session token
-	// TODO: Implement SessionService.Create
-	return nil, nil
+	token, err := rand.SessionToken()
+	if err != nil {
+		return nil, fmt.Errorf("SessionService.Create: %w", err)
+	}
+	// TODO: hash session token
+	session := Session{
+		UserID: userID,
+		Token:  token,
+		// TODO: Set the TokenHash
+	}
+	// TODO: Store the session in our DB
+	return &session, nil
 }
 
 // User queries a user via raw token using the SessionService.

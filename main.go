@@ -56,6 +56,10 @@ func main() {
 		templates.FS, "signin.gohtml", tailwind,
 	))
 
+	usersCtrl.SessionService = &models.SessionService{
+		DB: db,
+	}
+
 	r.Get("/users/new", usersCtrl.New)
 	r.Get("/users/me", usersCtrl.CurrentUser)
 	r.Post("/signup", usersCtrl.Create)
