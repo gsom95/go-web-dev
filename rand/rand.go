@@ -3,8 +3,12 @@ package rand
 import (
 	"crypto/rand"
 	"encoding/base64"
+	"errors"
 	"fmt"
 )
+
+// ErrNotEnoughRead occurs when not enough bytes were read from crypto/rand.Read().
+var ErrNotEnoughRead = errors.New("didn't read enough random bytes")
 
 // Bytes creates a slice of random bytes.
 func Bytes(n int) ([]byte, error) {
@@ -14,7 +18,7 @@ func Bytes(n int) ([]byte, error) {
 		return nil, fmt.Errorf("bytes: %w", err)
 	}
 	if nRead < n {
-		return nil, fmt.Errorf("bytes: didn't read enough random bytes")
+		return nil, fmt.Errorf("bytes: %w", ErrNotEnoughRead)
 	}
 	return b, nil
 }
@@ -31,7 +35,7 @@ func String(n int) (string, error) {
 
 const SessionTokenBytes = 32
 
-// SessionToken returns fixed-size session token for us
+// SessionToken returns fixed-size session token for us.
 func SessionToken() (string, error) {
 	return String(SessionTokenBytes)
 }
