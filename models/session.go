@@ -107,6 +107,18 @@ func (ss *SessionService) User(token string) (*User, error) {
 	return &user, nil
 }
 
+// Delete handles deleting a session.
+func (ss *SessionService) Delete(token string) error {
+	tokenHash := ss.hash(token)
+	_, err := ss.DB.Exec(`
+		DELETE FROM sessions
+		WHERE token_hash = $1;`, tokenHash)
+	if err != nil {
+		return fmt.Errorf("delete: %w", err)
+	}
+	return nil
+}
+
 // hash handles taking in a session token as a string and
 // returning the hash of that session token.
 func (ss *SessionService) hash(token string) string {
