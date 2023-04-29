@@ -35,3 +35,14 @@ func readCookie(r *http.Request, name string) (string, error) {
 	}
 	return c.Value, nil
 }
+
+// deleteCookie overwrites a cookie by setting a new cookie with the same name,
+// but different attributes. We can utilize this to delete a cookie by setting a new cookie
+// with the same name, but with a MaxAge attribute set to a value less than zero.
+//
+// This will tell our browser that the cookie is no longer valid (it has gone past its max age) and it will be deleted.
+func deleteCookie(w http.ResponseWriter, name string) {
+	cookie := newCookie(name, "")
+	cookie.MaxAge = -1
+	http.SetCookie(w, cookie)
+}
