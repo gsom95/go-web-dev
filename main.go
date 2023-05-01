@@ -57,7 +57,8 @@ func main() {
 	))
 
 	usersCtrl.SessionService = &models.SessionService{
-		DB: db,
+		DB:           db,
+		TokenManager: models.TokenManager{},
 	}
 
 	r.Get("/signup", usersCtrl.New)

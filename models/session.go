@@ -1,13 +1,9 @@
 package models
 
 import (
-	"crypto/sha256"
 	"database/sql"
-	"encoding/base64"
 	"errors"
 	"fmt"
-
-	"github.com/gsom95/go-web-dev/rand"
 )
 
 // Session is a one-to-one mapping of sessions table.
@@ -21,38 +17,22 @@ type Session struct {
 	TokenHash string
 }
 
-const (
-	// The minimum number of bytes to be used for each session token.
-	MinBytesPerToken = 32
-)
-
 // SessionService is a service for storing and fetching session info.
 type SessionService struct {
-	DB *sql.DB
-	// BytesPerToken is used to determine how many bytes to use when generating
-	// each session token. If this value is not set or is less than the
-	// MinBytesPerToken const it will be ignored and MinBytesPerToken will be
-	// used.
-	BytesPerToken int
+	DB           *sql.DB
+	TokenManager TokenManager
 }
 
 // Create will create a new session for the user provided. The session token
 // will be returned as the Token field on the Session type, but only the hashed
 // session token is stored in the database.
 func (ss *SessionService) Create(userID int) (*Session, error) {
-	bytesPerToken := ss.BytesPerToken
-	if bytesPerToken < MinBytesPerToken {
-		bytesPerToken = MinBytesPerToken
-	}
-	token, err := rand.String(bytesPerToken)
-	if err != nil {
-		return nil, fmt.Errorf("SessionService.Create: %w", err)
-	}
+	token, tokenHash, err := ss.TokenManager.NewToken()
 
 	session := Session{
 		UserID:    userID,
 		Token:     token,
-		TokenHash: ss.hash(token),
+		TokenHash: tokenHash,
 	}
 
 	row := ss.DB.QueryRow(`
@@ -83,7 +63,7 @@ func (ss *SessionService) Create(userID int) (*Session, error) {
 
 // User queries a user via raw token using the SessionService.
 func (ss *SessionService) User(token string) (*User, error) {
-	tokenHash := ss.hash(token)
+	tokenHash := ss.TokenManager.Hash(token)
 
 	var user User
 	row := ss.DB.QueryRow(`
@@ -109,7 +89,7 @@ func (ss *SessionService) User(token string) (*User, error) {
 
 // Delete handles deleting a session.
 func (ss *SessionService) Delete(token string) error {
-	tokenHash := ss.hash(token)
+	tokenHash := ss.TokenManager.Hash(token)
 	_, err := ss.DB.Exec(`
 		DELETE FROM sessions
 		WHERE token_hash = $1;`, tokenHash)
@@ -117,12 +97,4 @@ func (ss *SessionService) Delete(token string) error {
 		return fmt.Errorf("delete: %w", err)
 	}
 	return nil
-}
-
-// hash handles taking in a session token as a string and
-// returning the hash of that session token.
-func (ss *SessionService) hash(token string) string {
-	tokenHash := sha256.Sum256([]byte(token))
-	// base64 encode the data into a string
-	return base64.URLEncoding.EncodeToString(tokenHash[:])
 }
