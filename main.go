@@ -55,6 +55,9 @@ func main() {
 	usersCtrl.Templates.SignIn = view.Must(view.ParseFS(
 		templates.FS, "signin.gohtml", tailwind,
 	))
+	usersCtrl.Templates.CurrentUser = view.Must(view.ParseFS(
+		templates.FS, "current_user.gohtml", tailwind,
+	))
 
 	usersCtrl.SessionService = &models.SessionService{
 		DB:           db,

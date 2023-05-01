@@ -11,8 +11,9 @@ import (
 // Users will be used by HTTP handlers.
 type Users struct {
 	Templates struct {
-		New    Template
-		SignIn Template
+		New         Template
+		SignIn      Template
+		CurrentUser Template
 	}
 	UserService    *models.UserService
 	SessionService *models.SessionService
@@ -95,7 +96,7 @@ func (u Users) CurrentUser(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/signin", http.StatusFound)
 		return
 	}
-	fmt.Fprintf(w, "Current user: %s\n", user.Email)
+	u.Templates.CurrentUser.Execute(w, r, user)
 }
 
 // ProcessSignOut handles a web request to sign out a user, which means it will need to read
