@@ -60,7 +60,7 @@ func main() {
 		DB: db,
 	}
 
-	r.Get("/users/new", usersCtrl.New)
+	r.Get("/signup", usersCtrl.New)
 	r.Get("/users/me", usersCtrl.CurrentUser)
 	r.Post("/signup", usersCtrl.Create)
 
