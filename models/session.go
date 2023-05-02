@@ -4,7 +4,6 @@ import (
 	"crypto/sha256"
 	"database/sql"
 	"encoding/base64"
-	"errors"
 	"fmt"
 
 	"github.com/gsom95/go-web-dev/rand"
@@ -56,24 +55,12 @@ func (ss *SessionService) Create(userID int) (*Session, error) {
 	}
 
 	row := ss.DB.QueryRow(`
-		UPDATE sessions
-		SET token_hash = $2
-		WHERE user_id = $1
-    	RETURNING id;`,
-		session.UserID, session.TokenHash)
-	err = row.Scan(&session.ID)
-	if errors.Is(err, sql.ErrNoRows) {
-		// If no session exists, we will get ErrNoRows. That means we need to
-		// create a session object for that user.
-
-		row = ss.DB.QueryRow(`
 		INSERT INTO sessions (user_id, token_hash)
-		VALUES ($1, $2)
-		RETURNING id;`,
-			session.UserID, session.TokenHash)
-
-		err = row.Scan(&session.ID)
-	}
+		VALUES ($1, $2) ON CONFLICT (user_id) DO
+		UPDATE
+		SET token_hash = $2
+		RETURNING id;`, session.UserID, session.TokenHash)
+	err = row.Scan(&session.ID)
 	if err != nil {
 		return nil, fmt.Errorf("create: %w", err)
 	}
