@@ -7,6 +7,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/gsom95/go-web-dev/controllers"
+	"github.com/gsom95/go-web-dev/migrations"
 	"github.com/gsom95/go-web-dev/models"
 	"github.com/gsom95/go-web-dev/templates"
 	"github.com/gsom95/go-web-dev/view"
@@ -44,7 +45,8 @@ func main() {
 	}
 	defer db.Close()
 
-	err = models.Migrate(db, "migrations")
+	// Change the following line of code
+	err = models.MigrateFS(db, migrations.FS, ".")
 	if err != nil {
 		panic(err)
 	}
