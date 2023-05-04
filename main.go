@@ -6,6 +6,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/gorilla/csrf"
 	"github.com/gsom95/go-web-dev/controllers"
 	"github.com/gsom95/go-web-dev/migrations"
 	"github.com/gsom95/go-web-dev/models"
@@ -75,6 +76,13 @@ func main() {
 	r.Post("/signin", usersCtrl.ProcessSignIn)
 	r.Post("/signout", usersCtrl.ProcessSignOut)
 
+	csrfKey := "gFvi45R4fy5xNBlnEeZtQbfAVCYEIAUX"
+	csrfMw := csrf.Protect(
+		[]byte(csrfKey),
+		// TODO: Fix this before deploying
+		csrf.Secure(false),
+	)
+
 	log.Println("Starting the server on :3000...")
-	log.Println(http.ListenAndServe(":3000", r))
+	log.Println(http.ListenAndServe(":3000", csrfMw(r)))
 }
