@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/gsom95/go-web-dev/context"
 	"github.com/gsom95/go-web-dev/models"
 )
 
@@ -83,15 +84,8 @@ func (u Users) ProcessSignIn(w http.ResponseWriter, r *http.Request) {
 
 // CurrentUser authenticates user.
 func (u Users) CurrentUser(w http.ResponseWriter, r *http.Request) {
-	sessionToken, err := readCookie(r, CookieSession)
-	if err != nil {
-		fmt.Println(err)
-		http.Redirect(w, r, "/signin", http.StatusFound)
-		return
-	}
-	user, err := u.SessionService.User(sessionToken)
-	if err != nil {
-		fmt.Println(err)
+	user := context.User(r.Context())
+	if user == nil {
 		http.Redirect(w, r, "/signin", http.StatusFound)
 		return
 	}
