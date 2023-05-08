@@ -64,9 +64,10 @@ func main() {
 		templates.FS, "signin.gohtml", tailwind,
 	))
 
-	usersCtrl.SessionService = &models.SessionService{
+	sessionService := &models.SessionService{
 		DB: db,
 	}
+	usersCtrl.SessionService = sessionService
 
 	r.Get("/signup", usersCtrl.New)
 	r.Get("/users/me", usersCtrl.CurrentUser)
@@ -82,7 +83,10 @@ func main() {
 		// TODO: Fix this before deploying
 		csrf.Secure(false),
 	)
+	userMw := controllers.UserMiddleware{
+		SessionService: sessionService,
+	}
 
 	log.Println("Starting the server on :3000...")
-	log.Println(http.ListenAndServe(":3000", csrfMw(r)))
+	log.Println(http.ListenAndServe(":3000", csrfMw(userMw.SetUser(r))))
 }
