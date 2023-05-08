@@ -15,25 +15,6 @@ import (
 )
 
 func main() {
-	r := chi.NewRouter()
-	r.Use(middleware.Logger, middleware.Recoverer)
-	r.NotFound(func(w http.ResponseWriter, r *http.Request) {
-		http.NotFound(w, r)
-	})
-
-	tailwind := "tailwind.gohtml"
-
-	r.Get("/", controllers.StaticHandler(
-		view.Must(view.ParseFS(templates.FS, "home.gohtml", tailwind)),
-	))
-	r.Get("/contact", controllers.StaticHandler(
-		view.Must(view.ParseFS(templates.FS, "contact.gohtml", tailwind)),
-	))
-
-	r.Get("/faq", controllers.FAQ(
-		view.Must(view.ParseFS(templates.FS, "faq.gohtml", tailwind)),
-	))
-
 	// Setup a db connection
 	cfg := models.DefaultPostgresConfig()
 	db, err := models.Open(cfg)
@@ -52,6 +33,40 @@ func main() {
 		panic(err)
 	}
 
+	r := chi.NewRouter()
+
+	csrfKey := "gFvi45R4fy5xNBlnEeZtQbfAVCYEIAUX"
+	csrfMw := csrf.Protect(
+		[]byte(csrfKey),
+		// TODO: Fix this before deploying
+		csrf.Secure(false),
+	)
+	r.Use(middleware.Logger, middleware.Recoverer, csrfMw)
+
+	sessionService := &models.SessionService{
+		DB: db,
+	}
+	userMw := controllers.UserMiddleware{
+		SessionService: sessionService,
+	}
+	r.Use(userMw.SetUser)
+	r.NotFound(func(w http.ResponseWriter, r *http.Request) {
+		http.NotFound(w, r)
+	})
+
+	tailwind := "tailwind.gohtml"
+
+	r.Get("/", controllers.StaticHandler(
+		view.Must(view.ParseFS(templates.FS, "home.gohtml", tailwind)),
+	))
+	r.Get("/contact", controllers.StaticHandler(
+		view.Must(view.ParseFS(templates.FS, "contact.gohtml", tailwind)),
+	))
+
+	r.Get("/faq", controllers.FAQ(
+		view.Must(view.ParseFS(templates.FS, "faq.gohtml", tailwind)),
+	))
+
 	var usersCtrl controllers.Users
 	usersCtrl.UserService = &models.UserService{
 		DB: db,
@@ -64,29 +79,20 @@ func main() {
 		templates.FS, "signin.gohtml", tailwind,
 	))
 
-	sessionService := &models.SessionService{
-		DB: db,
-	}
 	usersCtrl.SessionService = sessionService
 
 	r.Get("/signup", usersCtrl.New)
-	r.Get("/users/me", usersCtrl.CurrentUser)
 	r.Post("/signup", usersCtrl.Create)
+
+	r.Route("/users/me", func(r chi.Router) {
+		r.Use(userMw.RequireUser)
+		r.Get("/", usersCtrl.CurrentUser)
+	})
 
 	r.Get("/signin", usersCtrl.SignIn)
 	r.Post("/signin", usersCtrl.ProcessSignIn)
 	r.Post("/signout", usersCtrl.ProcessSignOut)
 
-	csrfKey := "gFvi45R4fy5xNBlnEeZtQbfAVCYEIAUX"
-	csrfMw := csrf.Protect(
-		[]byte(csrfKey),
-		// TODO: Fix this before deploying
-		csrf.Secure(false),
-	)
-	userMw := controllers.UserMiddleware{
-		SessionService: sessionService,
-	}
-
 	log.Println("Starting the server on :3000...")
-	log.Println(http.ListenAndServe(":3000", csrfMw(userMw.SetUser(r))))
+	log.Println(http.ListenAndServe(":3000", r))
 }
