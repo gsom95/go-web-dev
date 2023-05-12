@@ -10,6 +10,8 @@ import (
 	"net/http"
 
 	"github.com/gorilla/csrf"
+	"github.com/gsom95/go-web-dev/context"
+	"github.com/gsom95/go-web-dev/models"
 )
 
 // Template is used as "view" object in our MVC-like app architecture.
@@ -31,6 +33,9 @@ func (t Template) Execute(w http.ResponseWriter, r *http.Request, data any) {
 		template.FuncMap{
 			"csrfField": func() template.HTML {
 				return csrf.TemplateField(r)
+			},
+			"currentUser": func() *models.User {
+				return context.User(r.Context())
 			},
 		},
 	)
@@ -58,6 +63,9 @@ func ParseFS(fs fs.FS, patterns ...string) (Template, error) {
 			// error will indicate that function is not implemented
 			"csrfField": func() (template.HTML, error) {
 				return "", fmt.Errorf("csrfField not implemented")
+			},
+			"currentUser": func() (*models.User, error) {
+				return nil, fmt.Errorf("currentUser not implemented")
 			},
 		},
 	)
