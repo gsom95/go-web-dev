@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 )
 
 func faqHandler(w http.ResponseWriter, r *http.Request) {
@@ -29,14 +30,25 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	r := chi.NewRouter()
+
 	r.Get("/", homeHandler)
 	r.Get("/contact", contactHandler)
 	r.Get("/faq", faqHandler)
+
+	r.Route("/about", func(r chi.Router) {
+		r.Use(middleware.Logger)
+		r.Get("/{name}", func(w http.ResponseWriter, req *http.Request) {
+			name := chi.URLParamFromCtx(req.Context(), "name")
+			_, _ = fmt.Fprintf(w, "Welcome to the about page, %s!", name)
+		})
+	})
 
 	r.NotFound(func(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Page not found", http.StatusNotFound)
 	})
 
 	fmt.Println("Starting the server on :3000...")
-	_ = http.ListenAndServe(":3000", r)
+	if err := http.ListenAndServe(":3000", r); err != nil {
+		fmt.Println("Error starting the server: ", err)
+	}
 }
