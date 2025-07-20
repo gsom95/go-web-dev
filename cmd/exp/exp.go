@@ -6,9 +6,10 @@ import (
 )
 
 type User struct {
-	Name, Bio  string
-	Times      int
-	Adventures []string
+	Name, Bio      string
+	Times          int
+	Adventures     []string
+	MapOfSomething map[string]any
 }
 
 func main() {
@@ -29,6 +30,12 @@ func main() {
 		//},
 		//Adventures: []string{},
 		Adventures: nil,
+		MapOfSomething: map[string]any{
+			"kek":   "cheburek",
+			"uno":   1,
+			"dos":   2.0,
+			"bytes": []byte("byte string"),
+		},
 	}
 
 	err = t.Execute(os.Stdout, user)

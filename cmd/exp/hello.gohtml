@@ -19,3 +19,11 @@
         {{ end }}
     </ul>
 </div>
+<div>
+    And even after that you have a map! {{ .MapOfSomething }}
+</div>
+<div>
+    The most interesting part of that is obviously: <br>
+    {{ .MapOfSomething.bytes /* access some map key */}}
+
+</div>
