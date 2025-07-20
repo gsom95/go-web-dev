@@ -31,3 +31,11 @@ func Parse(filepath string) (Template, error) {
 		htmlTpl: htmlTpl,
 	}, nil
 }
+
+func MustParse(filepath string) Template {
+	htmlTpl, err := Parse(filepath)
+	if err != nil {
+		panic(err)
+	}
+	return htmlTpl
+}
