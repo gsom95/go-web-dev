@@ -11,15 +11,7 @@ import (
 )
 
 func faqHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	fmt.Fprint(w, `<h1>Welcome to the FAQ page!</h1>
-	<p>Here you will find all the answers to your questions.</p>
-	<p>But you won't find them here.</p>
-	<p>Because this is just a demo.</p>
-	<p>But you can still <a href="/contact">contact us</a> if you want.</p>
-
-	<p>Or you can go back <a href="/">home</a>.</p>
-`)
+	executeTemplate(w, filepath.Join("templates", "faq.gohtml"))
 }
 
 func contactHandler(w http.ResponseWriter, r *http.Request) {
