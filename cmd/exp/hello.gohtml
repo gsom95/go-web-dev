@@ -1,7 +1,11 @@
-<script>
-    const user = {
-        "name": {{.Name}},
-        "bio": {{.Bio}}
-    };
-    console.log(user);
-</script>
+<h1>Hello page</h1>
+<p>
+    Hello, {{.Name}}
+</p>
+<div>
+    Quite a bio you have: <br>
+    <div>
+        {{.Bio}}
+    </div>
+    And you did that {{.Times}} times! Impressive...
+</div>
