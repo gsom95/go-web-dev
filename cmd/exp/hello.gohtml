@@ -11,19 +11,20 @@
 </div>
 <div>
     Your list of adventures contains:
-    <ul>
-        {{ range .Adventures }}
-            <li>{{.}}</li>
-        {{ else }}
-            <li>of nothing?</li>
-        {{ end }}
-    </ul>
+    {{ if .Adventures }}
+        <ul>
+            {{ range .Adventures }}
+                <li>{{.}}</li>
+            {{ end }}
+        </ul>
+    {{ else }}
+        of nothing?
+    {{ end }}
 </div>
 <div>
     And even after that you have a map! {{ .MapOfSomething }}
 </div>
 <div>
     The most interesting part of that is obviously: <br>
-    {{ .MapOfSomething.bytes /* access some map key */}}
-
+    {{ .MapOfSomething.bytes }}
 </div>
