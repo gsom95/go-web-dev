@@ -9,3 +9,13 @@
     </div>
     And you did that {{.Times}} times! Impressive...
 </div>
+<div>
+    Your list of adventures contains:
+    <ul>
+        {{ range .Adventures }}
+            <li>{{.}}</li>
+        {{ else }}
+            <li>of nothing?</li>
+        {{ end }}
+    </ul>
+</div>
