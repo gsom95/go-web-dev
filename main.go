@@ -23,39 +23,36 @@ func faqHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func contactHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	tplPath := filepath.Join("templates", "contact.gohtml")
-	tpl, err := template.ParseFiles(tplPath)
-	if err != nil {
-		slog.Error("cannot parse the contact page template", slog.String("error", err.Error()))
-		http.Error(w, "cannot parse the contact page template", http.StatusInternalServerError)
-		return
-	}
-
-	err = tpl.Execute(w, nil)
-	if err != nil {
-		slog.Error("cannot execute the contact page template", slog.String("error", err.Error()))
-		http.Error(w, "cannot create a response", http.StatusInternalServerError)
-		return
-	}
+	executeTemplate(w, tplPath)
 }
 
 func homeHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	tplPath := filepath.Join("templates", "home.gohtml")
-	tpl, err := template.ParseFiles(tplPath)
+	executeTemplate(w, tplPath)
+}
+
+func executeTemplate(w http.ResponseWriter, templatePath string) {
+	logger := slog.With(slog.String("filepath", templatePath))
+
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	tpl, err := template.ParseFiles(templatePath)
 	if err != nil {
-		slog.Error("cannot parse home page template", slog.String("error", err.Error()))
-		http.Error(w, "cannot parse home page template", http.StatusInternalServerError)
+		logger.Error("cannot parse a template file",
+			slog.String("error", err.Error()),
+		)
+		http.Error(w, "cannot parse a template file", http.StatusInternalServerError)
+		return
+	}
+	if err = tpl.Execute(w, nil); err != nil {
+		logger.Error("cannot execute a template",
+			slog.String("error", err.Error()),
+		)
+		http.Error(w, "cannot execute a template file", http.StatusInternalServerError)
 		return
 	}
 
-	err = tpl.Execute(w, nil)
-	if err != nil {
-		slog.Error("cannot execute a home page template", slog.String("error", err.Error()))
-		http.Error(w, "cannot create a response", http.StatusInternalServerError)
-		return
-	}
+	logger.Debug("request completed successfully")
 }
 
 func main() {
