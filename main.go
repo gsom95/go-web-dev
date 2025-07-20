@@ -3,23 +3,23 @@ package main
 import (
 	"log/slog"
 	"net/http"
-	"path/filepath"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/gsom95/go-web-dev/controllers"
+	"github.com/gsom95/go-web-dev/templates"
 	"github.com/gsom95/go-web-dev/views"
 )
 
 func main() {
 	r := chi.NewRouter()
 
-	homeTpl := views.MustParse(filepath.Join("templates", "home.gohtml"))
+	homeTpl := views.Must(views.ParseFS(templates.FS, "home.gohtml"))
 	r.Get("/", controllers.StaticHandler(homeTpl))
 
-	contactTpl := views.MustParse(filepath.Join("templates", "contact.gohtml"))
+	contactTpl := views.Must(views.ParseFS(templates.FS, "contact.gohtml"))
 	r.Get("/contact", controllers.StaticHandler(contactTpl))
 
-	faqTpl := views.MustParse(filepath.Join("templates", "faq.gohtml"))
+	faqTpl := views.Must(views.ParseFS(templates.FS, "faq.gohtml"))
 	r.Get("/faq", controllers.StaticHandler(faqTpl))
 
 	r.NotFound(func(w http.ResponseWriter, r *http.Request) {
