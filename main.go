@@ -36,9 +36,9 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = tpl.Execute(w, "a string")
+	err = tpl.Execute(w, nil)
 	if err != nil {
-		slog.Error("cannot execute home page template", slog.String("error", err.Error()))
+		slog.Error("cannot execute a home page template", slog.String("error", err.Error()))
 		http.Error(w, "cannot create a response", http.StatusInternalServerError)
 		return
 	}
