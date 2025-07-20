@@ -23,7 +23,21 @@ func faqHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func contactHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprint(w, "Welcome to the contact page!")
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	tplPath := filepath.Join("templates", "contact.gohtml")
+	tpl, err := template.ParseFiles(tplPath)
+	if err != nil {
+		slog.Error("cannot parse the contact page template", slog.String("error", err.Error()))
+		http.Error(w, "cannot parse the contact page template", http.StatusInternalServerError)
+		return
+	}
+
+	err = tpl.Execute(w, nil)
+	if err != nil {
+		slog.Error("cannot execute the contact page template", slog.String("error", err.Error()))
+		http.Error(w, "cannot create a response", http.StatusInternalServerError)
+		return
+	}
 }
 
 func homeHandler(w http.ResponseWriter, r *http.Request) {
