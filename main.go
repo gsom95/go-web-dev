@@ -2,12 +2,12 @@ package main
 
 import (
 	"fmt"
-	"html/template"
 	"log/slog"
 	"net/http"
 	"path/filepath"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/gsom95/go-web-dev/views"
 )
 
 func faqHandler(w http.ResponseWriter, r *http.Request) {
@@ -27,24 +27,15 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 func executeTemplate(w http.ResponseWriter, templatePath string) {
 	logger := slog.With(slog.String("filepath", templatePath))
 
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	tpl, err := template.ParseFiles(templatePath)
+	tpl, err := views.Parse(templatePath)
 	if err != nil {
-		logger.Error("cannot parse a template file",
-			slog.String("error", err.Error()),
-		)
+		logger.Error("cannot parse a template file", slog.String("error", err.Error()))
 		http.Error(w, "cannot parse a template file", http.StatusInternalServerError)
-		return
-	}
-	if err = tpl.Execute(w, nil); err != nil {
-		logger.Error("cannot execute a template",
-			slog.String("error", err.Error()),
-		)
-		http.Error(w, "cannot execute a template file", http.StatusInternalServerError)
+
 		return
 	}
 
-	logger.Debug("request completed successfully")
+	tpl.Execute(w, nil)
 }
 
 func main() {
