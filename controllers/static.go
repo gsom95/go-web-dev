@@ -6,10 +6,8 @@ import (
 	"github.com/gsom95/go-web-dev/views"
 )
 
-type Static struct {
-	Template views.Template
-}
-
-func (s Static) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	s.Template.Execute(w, nil)
+func StaticHandler(tpl views.Template) http.HandlerFunc {
+	return func(w http.ResponseWriter, _ *http.Request) {
+		tpl.Execute(w, nil)
+	}
 }
