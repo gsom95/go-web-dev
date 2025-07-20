@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/gsom95/go-web-dev/controllers"
 	"github.com/gsom95/go-web-dev/views"
 )
 
@@ -40,7 +41,13 @@ func executeTemplate(w http.ResponseWriter, templatePath string) {
 
 func main() {
 	r := chi.NewRouter()
-	r.Get("/", homeHandler)
+
+	homeTpl, err := views.Parse(filepath.Join("templates", "home.gohtml"))
+	if err != nil {
+		panic(err)
+	}
+
+	r.Get("/", controllers.Static{Template: homeTpl}.ServeHTTP)
 	r.Get("/contact", contactHandler)
 	r.Get("/faq", faqHandler)
 
